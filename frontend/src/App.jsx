@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter,Routes,Route} from 'react-router-dom'
 import Student from './Students'
 import CreateStudent from './CreateStudent';
+import UpdateEstudent from './UpdateEstudent';
 
 
 function App() {
@@ -16,6 +17,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Student />}/>
           <Route path="/create" element={<CreateStudent/>}/>
+          {/* :id es un marcador que indica que esa parte de la URL es dinámica y puede tomar cualquier valor que se le pase cuando se le haga click. */}
+          <Route path="/update/:id" element={<UpdateEstudent/>}/>
         </Routes>
 
       </BrowserRouter>

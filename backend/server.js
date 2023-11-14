@@ -38,28 +38,50 @@ app.get("/", (req, res) => {
 
 // Configuración de una ruta POST "/create"
 app.post("/create", (req, res) => {
-  // Consulta SQL para insertar datos en la tabla 'student'
   const sqlPost = "INSERT INTO students (`Name`, `Email`) VALUES (?)";
 
-  // (?) es un marcador de posicion donde se van a agregar los datos de 'values'
-  // Los valores a insertar, tomados del cuerpo de la solicitud (req.body)
   const values = [
-    req.body.name, // Valor del campo 'name' enviado en la solicitud
-    req.body.email, // Valor del campo 'email' enviado en la solicitud
+    req.body.name, 
+    req.body.email,
   ];
 
-  // Ejecución de la consulta a la base de datos usando db.query
+  
   db.query(sqlPost, [values], (error, data) => {
-    // Verificación de errores en la ejecución de la consulta
     if (error) {
-      // En caso de error, imprime el error en la consola y devuelve una respuesta de error al cliente
       console.error("Error executing query:", error);
       return res
         .status(500)
         .json({ error: "Internal Server Error", details: error });
     } else {
-      // Si la consulta se ejecuta correctamente, devuelve los datos obtenidos de la base de datos al cliente
       console.log("Added succesfully")
+      return res.status(200).json(data);
+    }
+  });
+});
+
+//update the date of a student with PUT with the student's Id which comes in the url
+app.put("/update/:id", (req, res) => {
+  const sqlPut = "update students set `Name` = ?, `Email`= ?  where ID = ? ";
+
+  //en esta parte el backend extrae los datos que le fueron enviados en el front en :
+  //axios.put("http://localhost:8081/update/"+ id , { name, email })
+
+  const values = [
+    req.body.name, 
+    req.body.email,
+  ];
+
+  const id = req.params.id;
+
+  // Esta expresión utiliza el spread operator (...) para expandir los valores del array values y luego agrega el id al final del array.
+  db.query(sqlPut, [...values, id], (error, data) => {
+    if (error) {
+      console.error("Error executing query:", error);
+      return res
+        .status(500)
+        .json({ error: "Internal Server Error", details: error });
+    } else {
+      console.log("Updated succesfully")
       return res.status(200).json(data);
     }
   });
