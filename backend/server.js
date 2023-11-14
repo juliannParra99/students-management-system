@@ -87,6 +87,26 @@ app.put("/update/:id", (req, res) => {
   });
 });
 
+//delete student info
+app.delete("/student/:id", (req, res) => {
+  const sqlDelete = "DELETE FROM students  WHERE ID = ? ";
+
+  const id = req.params.id;
+
+  db.query(sqlDelete, [id], (error, data) => {
+    if (error) {
+      console.error("Error executing query:", error);
+      return res
+        .status(500)
+        .json({ error: "Internal Server Error", details: error });
+    } else {
+      console.log("Deleted succesfully")
+      return res.status(200).json(data);
+    }
+  });
+});
+
+
 app.listen(8081, () => {
   console.log("Server is running on port: ", 8081);
 });
