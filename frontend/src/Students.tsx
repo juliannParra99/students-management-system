@@ -1,36 +1,54 @@
-import React, { useEffect } from 'react'
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+//renderiza dinamicamente la pagina al ahcer en click en el link, en lugar de recargar toda la pagina.
+import { Link } from "react-router-dom";
 
 
 function Student() {
-    
-    useEffect(()=>{
-        axios.get("http://localhost:8081/")
-        .then(res => console.log(res))
-        .catch(err => console.log(err))
-    },[])
+  const [students, setStudents] = useState<any[]>([]);
 
-    //here we will be show our data from our backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/")
+      .then((res) => setStudents(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  //here we will be show our data from our backend
   return (
-    <div className='d-flex vh-100 bg-primary justify-content-center align-items-center'>
-        <div className='w-50 bg-white rounded p-3'>
-            <button className='btn btn-success'>Add + </button>
-            <table className='table'>
-                <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
+      <div className="w-50 bg-white rounded p-3">
+        <Link className="btn btn-success" to={"/create"}>Add + </Link>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              //mapeo a traves del array students
+              students.map((data, i)=>(
+                // asigna un identificador unico a cada fila
+                <tr key={i}>
+                  <td>{data.Name}</td>
+                  <td>{data.Email}</td>
+                  <td>
+                    <button className="btn btn-primary">Upadate</button>
+                    <button className="btn btn-danger ms-2"> Delete</button>
+                  </td>
+                </tr>
 
-                </tbody>
-            </table>
-        </div>
-
+              ))
+            }
+            
+          </tbody>
+        </table>
+      </div>
     </div>
-  )
+  );
 }
 
-export default Student
-
+export default Student;
