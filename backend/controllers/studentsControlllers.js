@@ -1,5 +1,7 @@
 const studentsModel = require("../models/studentsModel");
 
+//datp: el retorno de datos una vez los datos son traidos de la db una vez todo haya salido bien, no  es necesario en operaciones como put, post o delete ya que el principal ovbjetivo de esto es modificar o agregar datos en la  db y no retornar. Sin embargo, puede ser beneficioso a futuro hacer o dejar el return por si eventualemente se agrega logica en la db de que cuano se realiza esa consulta , ademas se ejecute una trida de datos releventas.por lo que en este punto lo dejaremos retornado, como en este caso: return res.status(200).json(result);
+
 const getAllStudents = async (req, res) => {
   try {
     // Obtener todos los estudiantes desde el modelo
@@ -13,68 +15,58 @@ const getAllStudents = async (req, res) => {
     // Si ocurre un error durante la obtención de estudiantes,
     // se registra el error y se envía una respuesta de error con el código 500
     console.error("Error fetching students:", error);
-    return res.status(500).json({ error: "Internal Server Error", details: error.message });
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 };
 
-const createNewStudent = (req, res) => {
-  const sqlPost = "INSERT INTO students (`Name`, `Email`) VALUES (?)";
+const createNewStudent = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const result = await studentsModel.createStudent(name, email);
 
-  const values = [req.body.name, req.body.email];
-
-  db.query(sqlPost, [values], (error, data) => {
-    if (error) {
-      console.error("Error executing query:", error);
-      return res
-        .status(500)
-        .json({ error: "Internal Server Error", details: error });
-    } else {
-      console.log("Added succesfully");
-      return res.status(200).json(data);
-    }
-  });
+    console.log("Added successfully");
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error creating new student:", error);
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
+  }
 };
 
-const updateStudent = (req, res) => {
-  const sqlPut = "update students set `Name` = ?, `Email`= ?  where ID = ? ";
+const updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email } = req.body;
 
-  //en esta parte el backend extrae los datos que le fueron enviados en el front en :
-  //axios.put("http://localhost:8081/update/"+ id , { name, email })
+    const result = await studentsModel.updateStudentData(id, name, email);
 
-  const values = [req.body.name, req.body.email];
-
-  const id = req.params.id;
-
-  // Esta expresión utiliza el spread operator (...) para expandir los valores del array values y luego agrega el id al final del array.
-  db.query(sqlPut, [...values, id], (error, data) => {
-    if (error) {
-      console.error("Error executing query:", error);
-      return res
-        .status(500)
-        .json({ error: "Internal Server Error", details: error });
-    } else {
-      console.log("Updated succesfully");
-      return res.status(200).json(data);
-    }
-  });
+    console.log("Updated successfully");
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error updating student:", error);
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
+  }
 };
 
-const deleteStudent = (req, res) => {
-  const sqlDelete = "DELETE FROM students  WHERE ID = ? ";
+const deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const id = req.params.id;
+    const result = await studentsModel.deleteStudentData(id);
 
-  db.query(sqlDelete, [id], (error, data) => {
-    if (error) {
-      console.error("Error executing query:", error);
-      return res
-        .status(500)
-        .json({ error: "Internal Server Error", details: error });
-    } else {
-      console.log("Deleted succesfully");
-      return res.status(200).json(data);
-    }
-  });
+    console.log("Deleted successfully");
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
+  }
 };
 
 module.exports = {

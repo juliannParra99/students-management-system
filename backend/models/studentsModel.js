@@ -19,7 +19,59 @@ const getStudents = async () => {
   }
 };
 
+const createStudent = async (name, email)=>{
+  const sqlPost = "INSERT INTO students (`Name`, `Email`) VALUES (?, ?)";
+
+  try {
+    // Ejecución de la consulta a la base de datos utilizando async/await
+    const [data] = await db.promise().query(sqlPost, [name, email]);
+
+    // Retorna los datos obtenidos de la consulta exitosa (en este caso, puede ser el ID del estudiante insertado)
+    return data;
+  } catch (error) {
+    // En caso de error, registra el error y lanza una excepción para ser manejada por el código que llama a esta función
+    console.error("Error executing query:", error);
+    throw error;
+  }
+}
+
+const updateStudentData = async (id, name, email) => {
+  const sqlPut = "UPDATE students SET `Name` = ?, `Email` = ? WHERE ID = ?";
+
+  try {
+    // Ejecución de la consulta a la base de datos utilizando async/await
+    const [data] = await db.promise().query(sqlPut, [name, email, id]);
+
+    // Retorna los datos obtenidos de la consulta exitosa (puede ser información sobre la actualización)
+    return data;
+  } catch (error) {
+    // En caso de error, registra el error y lanza una excepción para ser manejada por el código que llama a esta función
+    console.error("Error executing query:", error);
+    throw error;
+  }
+}
+
+
+const deleteStudentData = async (id)=>{
+  const sqlDelete = "DELETE FROM students WHERE ID = ?";
+
+  try {
+    // Ejecución de la consulta a la base de datos utilizando async/await
+    const [data] = await db.promise().query(sqlDelete, [id]);
+
+    // Retorna los datos obtenidos de la consulta exitosa (puede ser información sobre la eliminación)
+    return data;
+  } catch (error) {
+    // En caso de error, registra el error y lanza una excepción para ser manejada por el código que llama a esta función
+    console.error("Error executing query:", error);
+    throw error;
+  }
+
+}
 
 module.exports = {
   getStudents,
+  createStudent,
+  updateStudentData,
+  deleteStudentData
 };
