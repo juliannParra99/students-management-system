@@ -1,33 +1,20 @@
-const mysql = require("mysql2");
+const studentsModel = require("../models/studentsModel");
 
-// Configura los parámetros de conexión a tu base de datos
-const db = mysql.createConnection({
-  host: "localhost", // Host de la base de datos
-  user: "root", // Usuario de la base de datos
-  password: "123456789river", // Contraseña del usuario
-  database: "students_management", // Nombre de la base de datos
-});
+const getAllStudents = async (req, res) => {
+  try {
+    // Obtener todos los estudiantes desde el modelo
+    // sincrono(del que se espera que se traigan los datos y puede tomar tiempo por que es una funcion asincrona) de ese metodo del modelo. Y despues de eso si todo sale bien, la respuesta de esa funcion asincrona (res) envia ek cidugi 200 junto con el json con los datos si  los hay,
+    const students = await studentsModel.getStudents();
 
-const getAllStudents = (req, res) => {
-  // SQL query to select all columns from the "students" table
-  const sqlGet = "SELECT * FROM students";
-
-  // Execute the SQL query using the database connection (db)
-  db.query(sqlGet, (error, data) => {
-    // Check if there is an error in executing the SQL query: Error handle
-    if (error) {
-      // Log the error details to the console
-      console.error("Error executing query:", error);
-
-      // Send a JSON response with the error information and a 500 Internal Server Error status
-      return res
-        .status(500)
-        .json({ error: "Internal Server Error", details: error });
-    } else {
-      // Send a JSON response with the retrieved data and a 200 OK status
-      res.status(200).json(data);
-    }
-  });
+    // Si no se encuentran estudiantes, se responde con un array vacío ([]),
+    // de lo contrario, se responde con los estudiantes obtenidos
+    return res.status(200).json(students || []);
+  } catch (error) {
+    // Si ocurre un error durante la obtención de estudiantes,
+    // se registra el error y se envía una respuesta de error con el código 500
+    console.error("Error fetching students:", error);
+    return res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
 };
 
 const createNewStudent = (req, res) => {
@@ -72,28 +59,27 @@ const updateStudent = (req, res) => {
   });
 };
 
-
 const deleteStudent = (req, res) => {
-    const sqlDelete = "DELETE FROM students  WHERE ID = ? ";
-  
-    const id = req.params.id;
-  
-    db.query(sqlDelete, [id], (error, data) => {
-      if (error) {
-        console.error("Error executing query:", error);
-        return res
-          .status(500)
-          .json({ error: "Internal Server Error", details: error });
-      } else {
-        console.log("Deleted succesfully")
-        return res.status(200).json(data);
-      }
-    });
-  }
+  const sqlDelete = "DELETE FROM students  WHERE ID = ? ";
 
-  module.exports = {
-    getAllStudents,
-    createNewStudent,
-    updateStudent,
-    deleteStudent
-  }
+  const id = req.params.id;
+
+  db.query(sqlDelete, [id], (error, data) => {
+    if (error) {
+      console.error("Error executing query:", error);
+      return res
+        .status(500)
+        .json({ error: "Internal Server Error", details: error });
+    } else {
+      console.log("Deleted succesfully");
+      return res.status(200).json(data);
+    }
+  });
+};
+
+module.exports = {
+  getAllStudents,
+  createNewStudent,
+  updateStudent,
+  deleteStudent,
+};
