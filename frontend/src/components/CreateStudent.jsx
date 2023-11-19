@@ -1,21 +1,24 @@
+//rfc or rfce to create a react component
 import axios from "axios";
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function UpdateStudent() {
+function CreateStudent() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [city, setCity] = useState("");
+  // Importamos la función useNavigate de React Router para manejar la navegación
   const navigate = useNavigate();
-   // Extraemos el parámetro 'id' de la URL utilizando useParams de React Router
-  const {id} = useParams();
-  
+
+  // Función que se ejecuta al enviar el formulario
   function handleSubmit(event) {
     event.preventDefault();
     axios
-      .put("http://localhost:8081/update/"+ id , { name, email })
+      .post("http://localhost:8081/create", { name, email, phoneNumber, city })
       .then((res) => {
-        console.log("Updated student", res);
+        console.log("created student", res);
         navigate("/");
       })
       .catch((err) => {
@@ -27,7 +30,7 @@ function UpdateStudent() {
       <div className="w-50 bg-white rounded p-3">
         {/* llama a la funcion handleSubmit cuando se envia el formulario */}
         <form onSubmit={handleSubmit}>
-          <h2>Update Student</h2>
+          <h2>Add Student</h2>
           <div className="mb-2">
             <label htmlFor="" className="form-label">
               Name
@@ -51,8 +54,30 @@ function UpdateStudent() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+          <div className="mb-2">
+            <label htmlFor="" className="form-label">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter Phone Number"
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+          </div>
+          <div className="mb-2">
+            <label htmlFor="" className="form-label">
+              City
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter Current City"
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </div>
           <button type="submit" className="btn btn-success">
-            Update
+            Submit
           </button>
         </form>
       </div>
@@ -60,4 +85,4 @@ function UpdateStudent() {
   );
 }
 
-export default UpdateStudent;
+export default CreateStudent;

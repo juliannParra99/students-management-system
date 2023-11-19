@@ -38,6 +38,8 @@ function Student() {
             <tr>
               <th>Name</th>
               <th>Email</th>
+              <th>Phone Number</th>
+              <th>City</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -49,6 +51,8 @@ function Student() {
                 <tr key={i}>
                   <td>{data.Name}</td>
                   <td>{data.Email}</td>
+                  <td>{data.PhoneNumber}</td>
+                  <td>{data.City}</td>
                   <td>
                     <Link to={`update/${data.id}`} className="btn btn-primary">
                       Update
@@ -57,7 +61,6 @@ function Student() {
                       onClick={(e) => handleDelete(data.id)}
                       className="btn btn-danger ms-2"
                     >
-                      {" "}
                       Delete
                     </button>
                   </td>

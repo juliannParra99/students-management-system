@@ -23,8 +23,8 @@ const getAllStudents = async (req, res) => {
 
 const createNewStudent = async (req, res) => {
   try {
-    const { name, email } = req.body;
-    const result = await studentsModel.createStudent(name, email);
+    const { name, email, phoneNumber, city  } = req.body;
+    const result = await studentsModel.createStudent(name, email, phoneNumber, city);
 
     console.log("Added successfully");
     return res.status(200).json(result);
@@ -39,10 +39,10 @@ const createNewStudent = async (req, res) => {
 const updateStudent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email } = req.body;
+    const { name, email, phoneNumber, city } = req.body;
 
-    const result = await studentsModel.updateStudentData(id, name, email);
-
+    const result = await studentsModel.updateStudentData(id, name, email, phoneNumber, city);
+    
     console.log("Updated successfully");
     return res.status(200).json(result);
   } catch (error) {

@@ -1,9 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {BrowserRouter,Routes,Route} from 'react-router-dom'
-import Student from './Students'
-import CreateStudent from './CreateStudent';
-import UpdateEstudent from './UpdateEstudent';
+import Student from './components/Students'
+import CreateStudent from './components/CreateStudent';
+import UpdateEstudent from './components/UpdateEstudent';
 
 
 function App() {

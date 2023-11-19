@@ -19,12 +19,12 @@ const getStudents = async () => {
   }
 };
 
-const createStudent = async (name, email)=>{
-  const sqlPost = "INSERT INTO students (`Name`, `Email`) VALUES (?, ?)";
+const createStudent = async (name, email, phoneNumber, city)=>{
+  const sqlPost = "INSERT INTO students (`Name`, `Email`, `PhoneNumber`, `City`) VALUES (?, ?, ?, ?)";
 
   try {
     // Ejecución de la consulta a la base de datos utilizando async/await
-    const [data] = await db.promise().query(sqlPost, [name, email]);
+    const [data] = await db.promise().query(sqlPost, [name, email, phoneNumber, city]);
 
     // Retorna los datos obtenidos de la consulta exitosa (en este caso, puede ser el ID del estudiante insertado)
     return data;
@@ -35,12 +35,12 @@ const createStudent = async (name, email)=>{
   }
 }
 
-const updateStudentData = async (id, name, email) => {
-  const sqlPut = "UPDATE students SET `Name` = ?, `Email` = ? WHERE ID = ?";
+const updateStudentData = async (id, name, email, phoneNumber, city) => {
+  const sqlPut = "UPDATE students SET `Name` = ?, `Email` = ?, `phoneNumber` = ?, `city` = ? WHERE ID = ?";
 
   try {
     // Ejecución de la consulta a la base de datos utilizando async/await
-    const [data] = await db.promise().query(sqlPut, [name, email, id]);
+    const [data] = await db.promise().query(sqlPut, [name, email, phoneNumber,city, id]);
 
     // Retorna los datos obtenidos de la consulta exitosa (puede ser información sobre la actualización)
     return data;
