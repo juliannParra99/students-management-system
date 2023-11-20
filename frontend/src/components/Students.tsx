@@ -6,22 +6,26 @@ function Student() {
   const [students, setStudents] = useState<any[]>([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/")
-      .then((res) => setStudents(res.data))
-      .catch((err) => console.log(err));
+    // Función para obtener la lista de estudiantes
+    const getStudents = async () => {
+      try {
+        const res = await axios.get("http://localhost:8081/");
+        setStudents(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getStudents();
   }, []);
 
-  // async function to handle a student's data using their id 
+  // Función para eliminar un estudiante sin recargar la página
   const handleDelete = async (id) => {
     try {
-      // request to the server to eliminate a record with their id
       await axios.delete("http://localhost:8081/student/" + id);
-
-      // if the elimination was succesfull, reload all the page (IS NOT RECOMENDED; it would be better dinamic charge)
-      window.location.reload();
+      // Actualiza la lista de estudiantes excluyendo el estudiante eliminado por su ID
+      setStudents(students.filter(student => student.id !== id));
     } catch (err) {
-      
       console.log(err);
     }
   };
