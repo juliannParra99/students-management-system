@@ -51,6 +51,21 @@ const updateStudentData = async (id, name, email, phoneNumber, city) => {
   }
 }
 
+const getStudentForId = async (id) => {
+  const sqlGetById = "SELECT * FROM students WHERE ID = ?";
+  try {
+    // Ejecución de la consulta a la base de datos utilizando async/await
+    const [data] = await db.promise().query(sqlGetById, [id]);
+
+    // Retorna los datos obtenidos de la consulta exitosa 
+    return data;
+  } catch (error) {
+    // En caso de error, registra el error y lanza una excepción para ser manejada por el código que llama a esta función
+    console.error("Error executing query:", error);
+    throw error;
+  }
+
+}
 
 const deleteStudentData = async (id)=>{
   const sqlDelete = "DELETE FROM students WHERE ID = ?";
@@ -73,5 +88,6 @@ module.exports = {
   getStudents,
   createStudent,
   updateStudentData,
+  getStudentForId,
   deleteStudentData
 };

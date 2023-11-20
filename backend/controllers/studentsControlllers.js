@@ -53,6 +53,22 @@ const updateStudent = async (req, res) => {
   }
 };
 
+const getStudentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await studentsModel.getStudentForId(id);
+    
+    console.log("Updated successfully");
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error updating student:", error);
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
+  }
+}
+
 const deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -73,5 +89,6 @@ module.exports = {
   getAllStudents,
   createNewStudent,
   updateStudent,
+  getStudentById,
   deleteStudent,
 };
