@@ -11,6 +11,15 @@ function CreateStudent() {
   const [city, setCity] = useState("");
   // Importamos la función useNavigate de React Router para manejar la navegación
   const navigate = useNavigate();
+  //este codigo lo tengo tambien en UpdateStudents, asique podria moduralizarlo para ahorrar tiempo y espacio.
+  const redirectTo = '/'; // Definir la ruta de destino como constante
+
+  const handleButtonClick = () => {
+    // Realiza alguna lógica o acción aquí si es necesario antes de la navegación
+    // Navega a la ruta de destino al presionar el botón usando la constante
+    navigate(redirectTo);
+  };
+
 
   // Función que se ejecuta al enviar el formulario
   function handleSubmit(event) {
@@ -19,7 +28,7 @@ function CreateStudent() {
       .post("http://localhost:8081/create", { name, email, phoneNumber, city })
       .then((res) => {
         console.log("created student", res);
-        navigate("/");
+        handleButtonClick();
       })
       .catch((err) => {
         console.log(err);
@@ -78,6 +87,9 @@ function CreateStudent() {
           </div>
           <button type="submit" className="btn btn-success">
             Submit
+          </button>
+          <button onClick={handleButtonClick} type="button" className="btn btn-danger m-2">
+            Cancel
           </button>
         </form>
       </div>
