@@ -2,8 +2,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const path = require('path');
-const studentsRoutes = require("./routes/studentsRoutes");
 
+const studentsRoutes = require("./routes/studentsRoutes");
+const registerRoute = require("./routes/register")
+const userAuth = require('./routes/auth');
 
 const PORT = process.env.PORT || 8081;
 app.use(cors());
@@ -18,6 +20,9 @@ app.use(express.static(path.join(__dirname, '/public')));
 
 //use the modules in the router folder
 app.use("/", studentsRoutes)
+app.use("/register", registerRoute)
+app.use("/auth", userAuth)
+
 
 // Obtener el puerto de la variable de entorno o usar uno por defecto; util para usar otro puerto si lo queremos desplegar.
 
