@@ -1,39 +1,68 @@
+// Creación de una base de datos de usuarios en memoria y configuración de sus funciones
 const usersDB = {
-  // Objeto que almacena y emula la funcionalidad de un estado similar a useState de React
-  users: require("../models/db_connection/users.json"), // Carga los datos de usuarios desde un archivo JSON
-  setUsers: function (data) {
-    this.users = data;
-  }, // Método para establecer los datos de usuarios
-};
+  // Array de usuarios cargado desde un archivo JSON
+  users: require('../models/users.json'),
+  // Función para actualizar los usuarios en la base de datos
+  setUsers: function (data) { this.users = data }
+}
 
-const bcrypt = require("bcrypt");
+// Importación de módulos necesarios
+const bcrypt = require('bcrypt'); // Módulo para el hash y comparación de contraseñas
+const jwt = require('jsonwebtoken'); // Módulo para la creación y verificación de tokens JWT
+require('dotenv').config(); // Módulo para la gestión de variables de entorno
+const fsPromises = require('fs').promises; // Módulo para operaciones asíncronas con archivos
+const path = require('path'); // Módulo para la gestión de rutas de archivos
 
+// Función para manejar el inicio de sesión
 const handleLogin = async (req, res) => {
-  const { user, pwd } = req.body; // Extrae el usuario y la contraseña del cuerpo de la solicitud
-  // Verifica si el usuario y la contraseña fueron proporcionados
-  if (!user || !pwd)
-    return res.status(401).json({"Message":"Please complete all the fields"});
+  // Extraer el nombre de usuario y la contraseña del cuerpo de la solicitud
+  const { user, pwd } = req.body;
+  // Verificar si el nombre de usuario y la contraseña están presentes en la solicitud
+  if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' });
+  
+  // Buscar al usuario en la base de datos de usuarios
+  const foundUser = usersDB.users.find(person => person.username === user);
+  // Si no se encuentra el usuario, enviar una respuesta de 'No autorizado' (401)
+  if (!foundUser) return res.sendStatus(401); //Unauthorized 
+  
+  // Comparar la contraseña proporcionada con la contraseña almacenada del usuario encontrado
+  const match = await bcrypt.compare(pwd, foundUser.password);
+  // Si la contraseña coincide
+  if (match) {
+      // Crear tokens JWT para el usuario (Access Token y Refresh Token)
+      const accessToken = jwt.sign(
+          { "username": foundUser.username },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: '30s' }
+      );
+      const refreshToken = jwt.sign(
+          { "username": foundUser.username },
+          process.env.REFRESH_TOKEN_SECRET,
+          { expiresIn: '1d' }
+      );
 
-  try {
-    // Busca al usuario en la base de datos simulada
-    const foundUser = usersDB.users.find((person) => person.username === user);
-    // Si el usuario no existe, devuelve Unauthorized (401)
-    if (!foundUser) return res.status(401).json({"Message":"The username or password is incorrect"});//Unauthorized
-    // Compara la contraseña proporcionada con la contraseña almacenada en la base de datos
-    const match = await bcrypt.compare(pwd, foundUser.password);
-    // Si las contraseñas coinciden se devuelve un mensaje de éxito; AQUI TAMBIEN SE DEBERIA COLOCAR UN JWT PARA MANEJAR EL ACCESO DEL USUARIO A LAS RUTAS DESPUES DEL LOGIN
-    if (match) {
-      res.json({ success: `User ${user} is logged in!` });
-      console.log("User logged successfully")
-    } else {
-      // Si las contraseñas no coinciden, se devuelve Unauthorized (401)
-      res.status(401).json({"Message":"The username or password is incorrect"});
-    }
-  } catch (err) {
-    console.log(err)
-    // Manejo de errores en caso de que ocurra algún problema
-    res.status(500).json({ 'message': err });
+      // Guardar el Refresh Token junto con el usuario actualizado en la base de datos de usuarios
+      const otherUsers = usersDB.users.filter(person => person.username !== foundUser.username);
+      const currentUser = { ...foundUser, refreshToken };
+      usersDB.setUsers([...otherUsers, currentUser]);
+
+      // Escribir los cambios en el archivo JSON que contiene la base de datos de usuarios
+      await fsPromises.writeFile(
+          path.join(__dirname, '..', 'models', 'users.json'),
+          JSON.stringify(usersDB.users)
+      );
+
+      // Configurar una cookie en la respuesta HTTP con el Refresh Token
+      res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+      
+      // Enviar una respuesta JSON con el Access Token
+      res.json({ accessToken });
+  } else {
+      // Si la contraseña no coincide, enviar una respuesta de 'No autorizado' (401)
+      res.sendStatus(401);
   }
-};
+}
 
+// Exportar la función handleLogin para su uso en otros archivos
 module.exports = { handleLogin };
+

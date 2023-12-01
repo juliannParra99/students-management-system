@@ -1,6 +1,6 @@
 const usersDB = {
     // Objeto que almacena y emula la funcionalidad de un estado similar a useState de React
-    users: require('../models/db_connection/users.json'), // Carga los datos de usuarios desde un archivo JSON
+    users: require('../models/users.json'), // Carga los datos de usuarios desde un archivo JSON
     setUsers: function (data) { this.users = data } // Método para establecer los datos de usuarios
 }
 
@@ -28,7 +28,7 @@ const handleNewUser = async (req, res) => {
         const newUser = { "username": user, "password": hashedPwd }; // Crea un nuevo usuario con la contraseña hasheada
 
         // Ruta del archivo JSON de usuarios
-        const filePath = path.join(__dirname, '..', 'models', 'db_connection', 'users.json');
+        const filePath = path.join(__dirname, '..', 'models', 'users.json');
         
         // Lee los datos existentes de usuarios del archivo JSON
         const existingData = await fsPromises.readFile(filePath, 'utf8');
