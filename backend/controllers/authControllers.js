@@ -53,7 +53,8 @@ const handleLogin = async (req, res) => {
       );
 
       // Configurar una cookie en la respuesta HTTP con el Refresh Token
-      res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+      //IMP: ANTERIORMENTE ESTA CONFIGURACION ERA ASI : res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 }); ; Al eliminar secure: true, permitiste que las cookies se envíen a través de conexiones HTTP y HTTPS, lo que solucionó el problema con la ruta de actualización del token (/refresh) que anteriormente no estaba recibiendo la cookie jwt. EN PRODUCCION ES RECOMENDABLE PONERLO EN SECURE = TRUE  de nuevo para que solo se manden a https, pero como todavia no estoy en produccion  para probar la logica s elo saque, sino no anda. En el futuro combiene agragarlo de nuevo. 
+      res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None',  maxAge: 24 * 60 * 60 * 1000 });
       
       // Enviar una respuesta JSON con el Access Token
       res.json({ accessToken });
