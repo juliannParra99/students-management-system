@@ -26,6 +26,7 @@ app.use("/register", registerRoute)
 app.use("/auth", userAuth)
 //el orden es importante cuando hablamos de register y auth y tokens como JWT. Primero register y auth, despues refersh token y despues verificacion de jwt para el acceso; el resresh token recibe la cookie que contiene el refresh token
 app.use("/refresh", require("./routes/refresh"))
+app.use("/logout", require("./routes/logout"))
 //use the modules in the router folder
 //para dar acceso a rutas protegidas con JWT. Las rutas que estan abajo de verifyJWT se protegen
 
