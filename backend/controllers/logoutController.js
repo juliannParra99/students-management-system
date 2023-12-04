@@ -22,7 +22,7 @@ const usersDB = {
       );
        // Busca un usuario con el refreshToken dado
       if (!foundUser) {
-        res.clearCookie("jwt", { httpOnly: true, sameSite: "None" }); // Borra la cookie jwt
+        res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true }); // Borra la cookie jwt
         return res.sendStatus(204); // Envía el código de estado 204 (No Content) ; IMP: en produccion tenemos que agregar  , secure: true, pero aca lo dejamos asi para que esto funcione apropidamente de momento; ; tmabien agregar el maxAge: 24 * 60 * 60 * 1000
       }
   
@@ -38,8 +38,8 @@ const usersDB = {
         path.join(__dirname, "..", "models", "users.json"), // Escribe la base de datos de usuarios actualizada en un archivo JSON
         JSON.stringify(usersDB.users) // Convierte los usuarios a formato JSON
       );
-  
-      res.clearCookie("jwt", { httpOnly: true, sameSite: "None" }); // Borra la cookie jwt; IMP: en produccion tenemos que agregar  , secure: true, pero aca lo dejamos asi para que esto funcione apropidamente de momento; tmabien agregar el maxAge: 24 * 60 * 60 * 1000
+      //igual que lo que puse en auth controller, para que el frontend pueda conectarse con el server necesitamos el secure: true, pero podemos omitirlo mientras solo trabajemos con el back; en este caso no ponemos el Age. Cuando usamos el frontend es util por que aveces thunder client nos meustra todo okay pero en el browser no.
+      res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true }); // Borra la cookie jwt; IMP: en produccion tenemos que agregar  , secure: true, pero aca lo dejamos asi para que esto funcione apropidamente de momento
       res.sendStatus(204); // Envía el código de estado 204 (No Content)
       console.log("Logout succesfully");
       
